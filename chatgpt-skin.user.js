@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.9
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.10
 // @namespace    xiaozhou-suqu
-// @version      0.4.9
-// @description  iPhone Safari 梦幻轻透版：修复真实占位节点、私人英文提示、无白框页眉与浅灰蓝发送键。
+// @version      0.4.10
+// @description  iPhone Safari 梦幻轻透版：纯 CSS 私人占位语、低开销刷新、无白框页眉与浅灰蓝发送键。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v049';
-  const STYLE_ID = 'xz-suqu-style-v049';
+  const ROOT_CLASS = 'xz-skin-v0410';
+  const STYLE_ID = 'xz-suqu-style-v0410';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -23,7 +23,7 @@
   const assetUrls = { user: '', assistant: '', background: '' };
   const legacy = readLegacyImages();
   let dbPromise;
-  let refreshFrame = 0;
+  let refreshTimer = 0;
 
   function readLegacyImages() {
     try {
@@ -453,6 +453,7 @@
       }
 
       html.${ROOT_CLASS} #prompt-textarea p.placeholder[data-placeholder]::after {
+        content: "Anything, my love." !important;
         color: rgba(15, 15, 15, .4) !important;
         font-family: Georgia, "Times New Roman", serif !important;
         font-style: italic !important;
@@ -681,7 +682,9 @@
     document.querySelectorAll(
       '.xz-composer-control-v045, .xz-model-v045, .xz-send-v045'
     ).forEach((button) => {
-      button.classList.remove('xz-composer-control-v045', 'xz-model-v045', 'xz-send-v045');
+      if (!surface.contains(button)) {
+        button.classList.remove('xz-composer-control-v045', 'xz-model-v045', 'xz-send-v045');
+      }
     });
 
     const surfaceRect = surface.getBoundingClientRect();
@@ -699,26 +702,16 @@
         && background[0] + background[1] + background[2] < 150;
       const isRightmost = rect.right >= surfaceRect.right - 18;
       const isSend = /send|发送|submit|stop|停止/.test(fingerprint) || (isDark && isRightmost);
-
-      if (isSend) {
-        button.classList.add('xz-send-v045');
-        return;
-      }
-
-      button.classList.add('xz-composer-control-v045');
-      if (rect.width >= rect.height * 1.7) button.classList.add('xz-model-v045');
+      const isModel = !isSend && rect.width >= rect.height * 1.7;
+      button.classList.toggle('xz-send-v045', isSend);
+      button.classList.toggle('xz-composer-control-v045', !isSend);
+      button.classList.toggle('xz-model-v045', isModel);
     });
   }
 
   function skinComposer() {
     const prompt = document.querySelector('#prompt-textarea');
     if (!prompt) return;
-    const privatePlaceholder = 'Anything, my love.';
-    prompt.querySelectorAll('p.placeholder[data-placeholder]').forEach((placeholder) => {
-      if (placeholder.getAttribute('data-placeholder') !== privatePlaceholder) {
-        placeholder.setAttribute('data-placeholder', privatePlaceholder);
-      }
-    });
     let surface = null;
     let node = prompt.parentElement;
     while (node && node !== document.body) {
@@ -769,8 +762,11 @@
   }
 
   function scheduleRefresh() {
-    cancelAnimationFrame(refreshFrame);
-    refreshFrame = requestAnimationFrame(refresh);
+    if (refreshTimer) return;
+    refreshTimer = window.setTimeout(() => {
+      refreshTimer = 0;
+      refresh();
+    }, 140);
   }
 
   function registerBackgroundMenu() {
