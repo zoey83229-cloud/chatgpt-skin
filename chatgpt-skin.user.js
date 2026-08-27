@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.1
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.2
 // @namespace    xiaozhou-suqu
-// @version      0.4.1
-// @description  iPhone Safari 轻量版：照片背景、单层奶白气泡、双头像状态胶囊、宋体；保留 ChatGPT 原生交互。
+// @version      0.4.2
+// @description  iPhone Safari 梦幻轻透版：照片背景、雾面气泡、头像名字与五线谱身份区、宋体；保留原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v04';
-  const STYLE_ID = 'xz-suqu-style-v04';
+  const ROOT_CLASS = 'xz-skin-v042';
+  const STYLE_ID = 'xz-suqu-style-v042';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -95,9 +95,7 @@
       assetUrls.background ? `url("${assetUrls.background}")` : 'none'
     );
 
-    document.querySelectorAll(
-      '.xz-avatar-v04[data-xz-role], .xz-together-avatar-v041[data-xz-role]'
-    ).forEach((image) => {
+    document.querySelectorAll('.xz-avatar-v04[data-xz-role]').forEach((image) => {
       const kind = image.dataset.xzRole;
       const source = assetUrls[kind] || '';
       image.src = source;
@@ -154,7 +152,7 @@
         min-height: 100%;
         background-color: #f4f0eb !important;
         background-image:
-          linear-gradient(rgba(255, 255, 255, .53), rgba(255, 255, 255, .53)),
+          linear-gradient(rgba(255, 255, 255, .39), rgba(255, 255, 255, .39)),
           var(--xz-v04-background) !important;
         background-position: center center !important;
         background-repeat: no-repeat !important;
@@ -167,35 +165,47 @@
         background-color: transparent !important;
       }
 
-      .xz-identity-v04 {
-        display: flex;
-        width: 100%;
-        box-sizing: border-box;
-        align-items: center;
-        gap: 8px;
-        margin: 0 0 7px;
-        color: rgba(var(--xz-v04-ink), .84);
-        font-family: var(--xz-v04-font);
-        font-size: 15px;
-        line-height: 1;
-        letter-spacing: .025em;
+      html.${ROOT_CLASS} #main [class*="bg-token-main-surface-primary"],
+      html.${ROOT_CLASS} #main [class*="bg-token-main-surface-secondary"] {
+        background-color: transparent !important;
       }
 
-      .xz-identity-v04[data-xz-role="assistant"] { justify-content: flex-start; }
-      .xz-identity-v04[data-xz-role="user"] { justify-content: flex-end; }
+      .xz-identity-v04 {
+        display: flex;
+        width: max-content;
+        max-width: 100%;
+        box-sizing: border-box;
+        align-items: center;
+        gap: 9px;
+        margin: 0 0 9px;
+        color: rgba(var(--xz-v04-ink), .76);
+        font-family: var(--xz-v04-font);
+        font-size: 19px;
+        font-style: italic;
+        line-height: 1;
+        letter-spacing: .08em;
+        text-shadow: 0 1px 7px rgba(255, 255, 255, .78);
+      }
+
+      .xz-identity-v04[data-xz-role="assistant"] { margin-right: auto; }
+      .xz-identity-v04[data-xz-role="user"] { margin-left: auto; }
 
       .xz-name-v04 {
         appearance: none;
         -webkit-appearance: none;
         display: inline-flex;
         align-items: center;
-        min-height: 32px;
+        min-height: 34px;
         padding: 0;
         border: 0;
         border-radius: 0;
         color: inherit;
         background: transparent;
-        font: inherit;
+        font-family: "Songti SC", "STSong", "Kaiti SC", "KaiTi", serif;
+        font-size: inherit;
+        font-style: inherit;
+        font-weight: 400;
+        line-height: 1;
         letter-spacing: inherit;
         cursor: pointer;
         touch-action: manipulation;
@@ -206,15 +216,15 @@
         appearance: none;
         -webkit-appearance: none;
         position: relative;
-        flex: 0 0 38px;
-        width: 38px;
-        height: 38px;
+        flex: 0 0 42px;
+        width: 42px;
+        height: 42px;
         overflow: hidden;
         padding: 0;
-        border: 1px solid rgba(255, 255, 255, .78);
+        border: 1.5px solid rgba(255, 255, 255, .86);
         border-radius: 50%;
         background: rgba(239, 232, 226, .9);
-        box-shadow: 0 3px 12px rgba(67, 56, 48, .08);
+        box-shadow: 0 4px 15px rgba(67, 56, 48, .11);
         cursor: pointer;
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
@@ -237,31 +247,99 @@
         font-size: 15px;
       }
 
+      .xz-music-v042 {
+        position: relative;
+        display: inline-block;
+        width: 62px;
+        height: 25px;
+        flex: 0 0 62px;
+        opacity: .48;
+        background: repeating-linear-gradient(
+          to bottom,
+          transparent 0 4px,
+          rgba(var(--xz-v04-soft), .7) 4px 5px
+        );
+        filter: drop-shadow(0 1px 3px rgba(255, 255, 255, .7));
+      }
+
+      .xz-music-v042::before {
+        content: "♪";
+        position: absolute;
+        left: 12px;
+        top: -2px;
+        color: rgba(var(--xz-v04-soft), .86);
+        font-family: Georgia, serif;
+        font-size: 21px;
+        font-style: normal;
+        line-height: 1;
+        transform: rotate(-8deg);
+      }
+
+      .xz-music-v042::after {
+        content: "♪";
+        position: absolute;
+        right: 10px;
+        top: 7px;
+        color: rgba(var(--xz-v04-soft), .72);
+        font-family: Georgia, serif;
+        font-size: 16px;
+        font-style: normal;
+        line-height: 1;
+        transform: rotate(7deg);
+      }
+
       .xz-bubble-v04 {
         box-sizing: border-box !important;
         max-width: min(92%, 760px) !important;
-        padding: 12px 15px !important;
-        border: 1px solid rgba(255, 255, 255, .68) !important;
-        border-radius: 18px !important;
-        color: rgb(var(--xz-v04-ink)) !important;
-        background: rgba(var(--xz-v04-paper), .75) !important;
-        box-shadow: 0 7px 25px rgba(67, 56, 48, .055) !important;
-        backdrop-filter: blur(11px) saturate(105%) !important;
-        -webkit-backdrop-filter: blur(11px) saturate(105%) !important;
+        padding: 10px 14px !important;
+        border: 1px solid rgba(255, 255, 255, .72) !important;
+        border-radius: 16px !important;
+        color: rgba(var(--xz-v04-ink), .88) !important;
+        background: rgba(var(--xz-v04-paper), .58) !important;
+        box-shadow: 0 5px 20px rgba(67, 56, 48, .045) !important;
+        backdrop-filter: blur(9px) saturate(102%) !important;
+        -webkit-backdrop-filter: blur(9px) saturate(102%) !important;
         font-family: var(--xz-v04-font) !important;
         line-height: 1.76 !important;
         letter-spacing: .008em;
       }
 
       .xz-bubble-v04[data-xz-role="assistant"] {
-        width: fit-content !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
         margin-inline: 0 auto !important;
+      }
+
+      .xz-bubble-v04[data-xz-role="assistant"] > :where(p, ul, ol, blockquote, pre, table) {
+        display: block;
+        width: fit-content;
+        max-width: 94%;
+        box-sizing: border-box;
+        margin: 0 0 9px !important;
+        padding: 10px 14px !important;
+        border: 1px solid rgba(255, 255, 255, .7) !important;
+        border-radius: 16px !important;
+        background: rgba(var(--xz-v04-paper), .56) !important;
+        box-shadow: 0 5px 20px rgba(67, 56, 48, .04) !important;
+        backdrop-filter: blur(9px) saturate(102%) !important;
+        -webkit-backdrop-filter: blur(9px) saturate(102%) !important;
+      }
+
+      .xz-bubble-v04[data-xz-role="assistant"] > :where(p, ul, ol, blockquote, pre, table):last-child {
+        margin-bottom: 0 !important;
       }
 
       .xz-bubble-v04[data-xz-role="user"] {
         width: fit-content !important;
         margin-inline: auto 0 !important;
-        background: rgba(249, 246, 242, .82) !important;
+        background: rgba(249, 246, 242, .63) !important;
       }
 
       /* ChatGPT 的正文子节点会单独指定黑体，这里只压正文标签，不碰图标。 */
@@ -290,10 +368,10 @@
       .xz-composer-v04 {
         border: 1px solid rgba(255, 255, 255, .72) !important;
         border-radius: 25px !important;
-        background: rgba(255, 253, 249, .79) !important;
-        box-shadow: 0 8px 28px rgba(61, 51, 43, .07) !important;
-        backdrop-filter: blur(13px) saturate(106%) !important;
-        -webkit-backdrop-filter: blur(13px) saturate(106%) !important;
+        background: rgba(255, 253, 249, .68) !important;
+        box-shadow: 0 7px 25px rgba(61, 51, 43, .055) !important;
+        backdrop-filter: blur(12px) saturate(104%) !important;
+        -webkit-backdrop-filter: blur(12px) saturate(104%) !important;
       }
 
       html.${ROOT_CLASS} #prompt-textarea {
@@ -301,107 +379,22 @@
         font-family: var(--xz-v04-font) !important;
       }
 
-      /* 顶部双头像状态胶囊：外框完全穿透点击，只有头像本身可点。 */
-      #xz-together-v041 {
-        --xz-v041-top: 68px;
-        position: fixed;
-        top: var(--xz-v041-top);
-        left: 50%;
-        z-index: 12;
-        display: flex;
-        align-items: center;
-        min-height: 44px;
-        box-sizing: border-box;
-        padding: 5px 10px 5px 7px;
-        border: 1px solid rgba(255, 255, 255, .78);
-        border-radius: 999px;
-        background: rgba(255, 252, 248, .72);
-        box-shadow: 0 8px 26px rgba(66, 54, 47, .09);
-        backdrop-filter: blur(15px) saturate(108%);
-        -webkit-backdrop-filter: blur(15px) saturate(108%);
-        transform: translateX(-50%);
-        pointer-events: none;
-      }
-
-      .xz-together-avatar-button-v041 {
-        appearance: none;
-        -webkit-appearance: none;
-        position: relative;
-        width: 34px;
-        height: 34px;
-        flex: 0 0 34px;
-        overflow: hidden;
-        padding: 0;
-        border: 1.5px solid rgba(255, 255, 255, .92);
-        border-radius: 50%;
-        background: rgb(239, 232, 226);
-        box-shadow: 0 2px 8px rgba(67, 56, 48, .1);
-        pointer-events: auto;
-        cursor: pointer;
-        touch-action: manipulation;
-        -webkit-tap-highlight-color: transparent;
-      }
-
-      .xz-together-avatar-button-v041 + .xz-together-avatar-button-v041 {
-        margin-left: -8px;
-      }
-
-      .xz-together-avatar-v041 {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-      }
-
-      .xz-together-fallback-v041 {
-        display: grid;
-        width: 100%;
-        height: 100%;
-        place-items: center;
-        color: rgba(var(--xz-v04-ink), .68);
-        font-family: var(--xz-v04-font);
-        font-size: 14px;
-      }
-
-      .xz-together-heart-v041 {
-        margin-left: 7px;
-        color: rgba(183, 118, 140, .84);
-        font-family: var(--xz-v04-font);
-        font-size: 13px;
-        line-height: 1;
-      }
-
-      .xz-together-status-dot-v041 {
-        width: 7px;
-        height: 7px;
-        margin-left: 5px;
-        border: 1px solid rgba(255, 255, 255, .88);
-        border-radius: 50%;
-        background: rgb(151, 190, 155);
-        box-shadow: 0 0 0 3px rgba(151, 190, 155, .13);
-      }
-
       @media (max-width: 720px) {
         .xz-identity-v04 {
-          margin-bottom: 6px;
+          margin-bottom: 8px;
           padding-inline: 2px;
         }
 
         .xz-avatar-button-v04 {
-          flex-basis: 36px;
-          width: 36px;
-          height: 36px;
+          flex-basis: 40px;
+          width: 40px;
+          height: 40px;
         }
 
         .xz-bubble-v04 {
           max-width: 94% !important;
-          padding: 11px 13px !important;
-          border-radius: 17px !important;
-        }
-
-        #xz-together-v041 {
-          min-height: 42px;
-          padding-block: 4px;
+          padding: 10px 13px !important;
+          border-radius: 16px !important;
         }
       }
     `;
@@ -444,78 +437,13 @@
       chooseImage('background');
     });
 
-    if (role === 'user') row.append(name, avatarButton);
-    else row.append(avatarButton, name);
+    const music = document.createElement('span');
+    music.className = 'xz-music-v042';
+    music.setAttribute('aria-hidden', 'true');
+
+    if (role === 'user') row.append(music, name, avatarButton);
+    else row.append(avatarButton, name, music);
     return row;
-  }
-
-  function createTogetherAvatar(role) {
-    const button = document.createElement('button');
-    button.type = 'button';
-    button.className = 'xz-together-avatar-button-v041';
-    button.setAttribute('aria-label', role === 'user' ? '更换小粥头像' : '更换苏瞿头像');
-    button.addEventListener('click', (event) => {
-      event.stopPropagation();
-      chooseImage(role);
-    });
-
-    const image = document.createElement('img');
-    image.className = 'xz-together-avatar-v041';
-    image.dataset.xzRole = role;
-    image.alt = role === 'user' ? '小粥头像' : '苏瞿头像';
-
-    const fallback = document.createElement('span');
-    fallback.className = 'xz-together-fallback-v041';
-    fallback.textContent = role === 'user' ? '粥' : '瞿';
-
-    button.append(image, fallback);
-    return button;
-  }
-
-  function positionTogetherBar() {
-    const bar = document.getElementById('xz-together-v041');
-    if (!bar) return;
-
-    const bottoms = [...document.querySelectorAll('header')]
-      .map((header) => header.getBoundingClientRect())
-      .filter((rect) => rect.width > window.innerWidth * .55
-        && rect.height > 32
-        && rect.height < 180
-        && rect.bottom > 0
-        && rect.bottom < window.innerHeight * .38)
-      .map((rect) => rect.bottom);
-
-    const headerBottom = bottoms.length ? Math.max(...bottoms) : 50;
-    const top = Math.max(58, Math.round(headerBottom + 9));
-    bar.style.setProperty('--xz-v041-top', `${top}px`);
-  }
-
-  function ensureTogetherBar() {
-    let bar = document.getElementById('xz-together-v041');
-    if (!bar) {
-      bar = document.createElement('div');
-      bar.id = 'xz-together-v041';
-      bar.setAttribute('aria-label', '小粥和苏瞿都在这里');
-
-      const heart = document.createElement('span');
-      heart.className = 'xz-together-heart-v041';
-      heart.textContent = '♥';
-      heart.setAttribute('aria-hidden', 'true');
-
-      const dot = document.createElement('span');
-      dot.className = 'xz-together-status-dot-v041';
-      dot.setAttribute('aria-hidden', 'true');
-
-      bar.append(
-        createTogetherAvatar('assistant'),
-        createTogetherAvatar('user'),
-        heart,
-        dot
-      );
-      document.body.appendChild(bar);
-    }
-
-    positionTogetherBar();
   }
 
   function findBubble(roleElement, role) {
@@ -575,7 +503,7 @@
 
   function refresh() {
     document.documentElement.classList.add(ROOT_CLASS);
-    ensureTogetherBar();
+    document.getElementById('xz-together-v041')?.remove();
     cleanOrphanIdentities();
     document.querySelectorAll(
       '[data-message-author-role="user"], [data-message-author-role="assistant"]'
@@ -600,8 +528,6 @@
     registerBackgroundMenu();
     refresh();
     loadAssets();
-
-    window.addEventListener('resize', positionTogetherBar, { passive: true });
 
     const observer = new MutationObserver(scheduleRefresh);
     observer.observe(document.body, { childList: true, subtree: true });
