@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.5
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.6
 // @namespace    xiaozhou-suqu
-// @version      0.4.5
-// @description  iPhone Safari 梦幻轻透版：主题化玻璃输入区、黑色系统文字、透明页眉与五线谱身份区；保留原生交互。
+// @version      0.4.6
+// @description  iPhone Safari 梦幻轻透版：高透明玻璃输入区、浅灰蓝发送键、透明页眉与五线谱身份区；保留原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v045';
-  const STYLE_ID = 'xz-suqu-style-v045';
+  const ROOT_CLASS = 'xz-skin-v046';
+  const STYLE_ID = 'xz-suqu-style-v046';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -420,7 +420,7 @@
       .xz-composer-v04 {
         border: 1px solid rgba(255, 255, 255, .78) !important;
         border-radius: 30px !important;
-        background: rgba(255, 253, 249, .5) !important;
+        background: rgba(255, 253, 249, .36) !important;
         box-shadow:
           0 10px 32px rgba(28, 28, 28, .075),
           inset 0 1px 0 rgba(255, 255, 255, .62) !important;
@@ -445,7 +445,7 @@
       html.${ROOT_CLASS} .xz-composer-control-v045 {
         color: #0f0f0f !important;
         border: 1px solid rgba(255, 255, 255, .66) !important;
-        background: rgba(255, 255, 255, .38) !important;
+        background: rgba(255, 255, 255, .25) !important;
         box-shadow:
           0 3px 12px rgba(28, 28, 28, .045),
           inset 0 1px 0 rgba(255, 255, 255, .52) !important;
@@ -462,11 +462,11 @@
         border: 1px solid rgba(255, 255, 255, .72) !important;
         background: linear-gradient(
           145deg,
-          rgba(191, 137, 157, .94),
-          rgba(150, 107, 125, .94)
+          rgba(188, 202, 214, .94),
+          rgba(151, 172, 191, .94)
         ) !important;
         box-shadow:
-          0 5px 16px rgba(112, 74, 89, .2),
+          0 5px 16px rgba(86, 111, 132, .2),
           inset 0 1px 0 rgba(255, 255, 255, .32) !important;
       }
 
