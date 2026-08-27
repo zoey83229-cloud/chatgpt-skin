@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.7
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.8
 // @namespace    xiaozhou-suqu
-// @version      0.4.7
-// @description  iPhone Safari 梦幻轻透版：无白色分组框页眉、灰色模式标识、高透明输入区与浅灰蓝发送键。
+// @version      0.4.8
+// @description  iPhone Safari 梦幻轻透版：私人英文占位语、无白框页眉、高透明输入区与浅灰蓝发送键。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v047';
-  const STYLE_ID = 'xz-suqu-style-v047';
+  const ROOT_CLASS = 'xz-skin-v048';
+  const STYLE_ID = 'xz-suqu-style-v048';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -453,7 +453,11 @@
       }
 
       html.${ROOT_CLASS} #prompt-textarea[data-placeholder]:empty::before {
-        color: rgba(15, 15, 15, .58) !important;
+        color: rgba(15, 15, 15, .4) !important;
+        font-family: Georgia, "Times New Roman", serif !important;
+        font-style: italic !important;
+        font-weight: 400 !important;
+        letter-spacing: .018em;
       }
 
       html.${ROOT_CLASS} .xz-composer-control-v045 {
@@ -709,6 +713,14 @@
   function skinComposer() {
     const prompt = document.querySelector('#prompt-textarea');
     if (!prompt) return;
+    const privatePlaceholder = 'Anything, my love.';
+    if (prompt.getAttribute('data-placeholder') !== privatePlaceholder) {
+      prompt.setAttribute('data-placeholder', privatePlaceholder);
+    }
+    if (prompt.hasAttribute('aria-placeholder')
+      && prompt.getAttribute('aria-placeholder') !== privatePlaceholder) {
+      prompt.setAttribute('aria-placeholder', privatePlaceholder);
+    }
     let surface = null;
     let node = prompt.parentElement;
     while (node && node !== document.body) {
