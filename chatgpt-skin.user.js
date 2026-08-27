@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.1
 // @namespace    xiaozhou-suqu
-// @version      0.4.0
-// @description  iPhone Safari 轻量版：照片背景、单层奶白气泡、左右头像与名字、宋体；保留 ChatGPT 原生交互。
+// @version      0.4.1
+// @description  iPhone Safari 轻量版：照片背景、单层奶白气泡、双头像状态胶囊、宋体；保留 ChatGPT 原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -95,7 +95,9 @@
       assetUrls.background ? `url("${assetUrls.background}")` : 'none'
     );
 
-    document.querySelectorAll('.xz-avatar-v04[data-xz-role]').forEach((image) => {
+    document.querySelectorAll(
+      '.xz-avatar-v04[data-xz-role], .xz-together-avatar-v041[data-xz-role]'
+    ).forEach((image) => {
       const kind = image.dataset.xzRole;
       const source = assetUrls[kind] || '';
       image.src = source;
@@ -262,6 +264,22 @@
         background: rgba(249, 246, 242, .82) !important;
       }
 
+      /* ChatGPT 的正文子节点会单独指定黑体，这里只压正文标签，不碰图标。 */
+      .xz-bubble-v04 :where(p, li, blockquote, h1, h2, h3, h4, h5, h6, td, th) {
+        font-family: var(--xz-v04-font) !important;
+      }
+
+      .xz-bubble-v04 a {
+        color: rgb(142, 96, 112) !important;
+        text-decoration-color: rgba(142, 96, 112, .36) !important;
+        text-underline-offset: .16em;
+      }
+
+      html.${ROOT_CLASS} ::selection {
+        color: rgb(var(--xz-v04-ink));
+        background: rgba(224, 183, 198, .38);
+      }
+
       .xz-bubble-v04 pre,
       .xz-bubble-v04 code,
       .xz-bubble-v04 kbd,
@@ -283,6 +301,86 @@
         font-family: var(--xz-v04-font) !important;
       }
 
+      /* 顶部双头像状态胶囊：外框完全穿透点击，只有头像本身可点。 */
+      #xz-together-v041 {
+        --xz-v041-top: 68px;
+        position: fixed;
+        top: var(--xz-v041-top);
+        left: 50%;
+        z-index: 12;
+        display: flex;
+        align-items: center;
+        min-height: 44px;
+        box-sizing: border-box;
+        padding: 5px 10px 5px 7px;
+        border: 1px solid rgba(255, 255, 255, .78);
+        border-radius: 999px;
+        background: rgba(255, 252, 248, .72);
+        box-shadow: 0 8px 26px rgba(66, 54, 47, .09);
+        backdrop-filter: blur(15px) saturate(108%);
+        -webkit-backdrop-filter: blur(15px) saturate(108%);
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .xz-together-avatar-button-v041 {
+        appearance: none;
+        -webkit-appearance: none;
+        position: relative;
+        width: 34px;
+        height: 34px;
+        flex: 0 0 34px;
+        overflow: hidden;
+        padding: 0;
+        border: 1.5px solid rgba(255, 255, 255, .92);
+        border-radius: 50%;
+        background: rgb(239, 232, 226);
+        box-shadow: 0 2px 8px rgba(67, 56, 48, .1);
+        pointer-events: auto;
+        cursor: pointer;
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      .xz-together-avatar-button-v041 + .xz-together-avatar-button-v041 {
+        margin-left: -8px;
+      }
+
+      .xz-together-avatar-v041 {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      .xz-together-fallback-v041 {
+        display: grid;
+        width: 100%;
+        height: 100%;
+        place-items: center;
+        color: rgba(var(--xz-v04-ink), .68);
+        font-family: var(--xz-v04-font);
+        font-size: 14px;
+      }
+
+      .xz-together-heart-v041 {
+        margin-left: 7px;
+        color: rgba(183, 118, 140, .84);
+        font-family: var(--xz-v04-font);
+        font-size: 13px;
+        line-height: 1;
+      }
+
+      .xz-together-status-dot-v041 {
+        width: 7px;
+        height: 7px;
+        margin-left: 5px;
+        border: 1px solid rgba(255, 255, 255, .88);
+        border-radius: 50%;
+        background: rgb(151, 190, 155);
+        box-shadow: 0 0 0 3px rgba(151, 190, 155, .13);
+      }
+
       @media (max-width: 720px) {
         .xz-identity-v04 {
           margin-bottom: 6px;
@@ -299,6 +397,11 @@
           max-width: 94% !important;
           padding: 11px 13px !important;
           border-radius: 17px !important;
+        }
+
+        #xz-together-v041 {
+          min-height: 42px;
+          padding-block: 4px;
         }
       }
     `;
@@ -344,6 +447,75 @@
     if (role === 'user') row.append(name, avatarButton);
     else row.append(avatarButton, name);
     return row;
+  }
+
+  function createTogetherAvatar(role) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'xz-together-avatar-button-v041';
+    button.setAttribute('aria-label', role === 'user' ? '更换小粥头像' : '更换苏瞿头像');
+    button.addEventListener('click', (event) => {
+      event.stopPropagation();
+      chooseImage(role);
+    });
+
+    const image = document.createElement('img');
+    image.className = 'xz-together-avatar-v041';
+    image.dataset.xzRole = role;
+    image.alt = role === 'user' ? '小粥头像' : '苏瞿头像';
+
+    const fallback = document.createElement('span');
+    fallback.className = 'xz-together-fallback-v041';
+    fallback.textContent = role === 'user' ? '粥' : '瞿';
+
+    button.append(image, fallback);
+    return button;
+  }
+
+  function positionTogetherBar() {
+    const bar = document.getElementById('xz-together-v041');
+    if (!bar) return;
+
+    const bottoms = [...document.querySelectorAll('header')]
+      .map((header) => header.getBoundingClientRect())
+      .filter((rect) => rect.width > window.innerWidth * .55
+        && rect.height > 32
+        && rect.height < 180
+        && rect.bottom > 0
+        && rect.bottom < window.innerHeight * .38)
+      .map((rect) => rect.bottom);
+
+    const headerBottom = bottoms.length ? Math.max(...bottoms) : 50;
+    const top = Math.max(58, Math.round(headerBottom + 9));
+    bar.style.setProperty('--xz-v041-top', `${top}px`);
+  }
+
+  function ensureTogetherBar() {
+    let bar = document.getElementById('xz-together-v041');
+    if (!bar) {
+      bar = document.createElement('div');
+      bar.id = 'xz-together-v041';
+      bar.setAttribute('aria-label', '小粥和苏瞿都在这里');
+
+      const heart = document.createElement('span');
+      heart.className = 'xz-together-heart-v041';
+      heart.textContent = '♥';
+      heart.setAttribute('aria-hidden', 'true');
+
+      const dot = document.createElement('span');
+      dot.className = 'xz-together-status-dot-v041';
+      dot.setAttribute('aria-hidden', 'true');
+
+      bar.append(
+        createTogetherAvatar('assistant'),
+        createTogetherAvatar('user'),
+        heart,
+        dot
+      );
+      document.body.appendChild(bar);
+    }
+
+    positionTogetherBar();
   }
 
   function findBubble(roleElement, role) {
@@ -403,6 +575,7 @@
 
   function refresh() {
     document.documentElement.classList.add(ROOT_CLASS);
+    ensureTogetherBar();
     cleanOrphanIdentities();
     document.querySelectorAll(
       '[data-message-author-role="user"], [data-message-author-role="assistant"]'
@@ -427,6 +600,8 @@
     registerBackgroundMenu();
     refresh();
     loadAssets();
+
+    window.addEventListener('resize', positionTogetherBar, { passive: true });
 
     const observer = new MutationObserver(scheduleRefresh);
     observer.observe(document.body, { childList: true, subtree: true });
