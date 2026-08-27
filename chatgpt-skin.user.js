@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.3
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.4
 // @namespace    xiaozhou-suqu
-// @version      0.4.3
-// @description  iPhone Safari 梦幻轻透版：增强文字对比度、透明顶部栏、雾面气泡与五线谱身份区；保留原生交互。
+// @version      0.4.4
+// @description  iPhone Safari 梦幻轻透版：黑色系统文字、列表页透明页眉、雾面输入框与五线谱身份区；保留原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v042';
-  const STYLE_ID = 'xz-suqu-style-v042';
+  const ROOT_CLASS = 'xz-skin-v044';
+  const STYLE_ID = 'xz-suqu-style-v044';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -140,8 +140,8 @@
     style.textContent = `
       :root {
         --xz-v04-paper: 255, 253, 249;
-        --xz-v04-ink: 39, 36, 34;
-        --xz-v04-soft: 88, 82, 78;
+        --xz-v04-ink: 15, 15, 15;
+        --xz-v04-soft: 42, 42, 42;
         --xz-v04-font: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
         --xz-v04-background: none;
       }
@@ -149,7 +149,12 @@
       html.${ROOT_CLASS},
       html.${ROOT_CLASS} body {
         color-scheme: light !important;
+        --text-primary: #0f0f0f !important;
+        --text-secondary: #1f1f1f !important;
+        --text-tertiary: #303030 !important;
+        --text-quaternary: #424242 !important;
         min-height: 100%;
+        color: #0f0f0f !important;
         background-color: #f4f0eb !important;
         background-image:
           linear-gradient(rgba(255, 255, 255, .39), rgba(255, 255, 255, .39)),
@@ -184,9 +189,37 @@
         background-color: transparent !important;
       }
 
+      /* 项目聊天列表使用另一套顶部节点，由脚本按真实可见位置标记。 */
+      html.${ROOT_CLASS} .xz-header-v044 {
+        background: rgba(255, 253, 250, .53) !important;
+        border-bottom-color: rgba(255, 255, 255, .5) !important;
+        box-shadow: 0 5px 18px rgba(30, 30, 30, .04) !important;
+        backdrop-filter: blur(16px) saturate(106%) !important;
+        -webkit-backdrop-filter: blur(16px) saturate(106%) !important;
+      }
+
+      html.${ROOT_CLASS} .xz-header-v044 > div,
+      html.${ROOT_CLASS} .xz-header-v044 > nav {
+        background-color: transparent !important;
+        background-image: none !important;
+      }
+
+      html.${ROOT_CLASS} [class*="text-token-text-primary"] {
+        color: #0f0f0f !important;
+      }
+
+      html.${ROOT_CLASS} [class*="text-token-text-secondary"] {
+        color: rgba(15, 15, 15, .84) !important;
+      }
+
+      html.${ROOT_CLASS} [class*="text-token-text-tertiary"],
+      html.${ROOT_CLASS} [class*="text-token-text-quaternary"] {
+        color: rgba(15, 15, 15, .72) !important;
+      }
+
       html.${ROOT_CLASS} #main [class*="text-token-text-secondary"],
       html.${ROOT_CLASS} #main [class*="text-token-text-tertiary"] {
-        color: rgba(var(--xz-v04-ink), .7) !important;
+        color: rgba(var(--xz-v04-ink), .82) !important;
       }
 
       .xz-identity-v04 {
@@ -385,17 +418,26 @@
       }
 
       .xz-composer-v04 {
-        border: 1px solid rgba(255, 255, 255, .72) !important;
+        border: 1px solid rgba(255, 255, 255, .78) !important;
         border-radius: 25px !important;
-        background: rgba(255, 253, 249, .68) !important;
-        box-shadow: 0 7px 25px rgba(61, 51, 43, .055) !important;
-        backdrop-filter: blur(12px) saturate(104%) !important;
-        -webkit-backdrop-filter: blur(12px) saturate(104%) !important;
+        background: rgba(255, 253, 249, .62) !important;
+        box-shadow: 0 8px 28px rgba(28, 28, 28, .065) !important;
+        backdrop-filter: blur(15px) saturate(106%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(106%) !important;
+      }
+
+      html.${ROOT_CLASS} .xz-composer-backdrop-v044 {
+        background-color: transparent !important;
+        background-image: none !important;
       }
 
       html.${ROOT_CLASS} #prompt-textarea {
-        color: rgba(var(--xz-v04-ink), .96) !important;
+        color: #0f0f0f !important;
         font-family: var(--xz-v04-font) !important;
+      }
+
+      html.${ROOT_CLASS} #prompt-textarea[data-placeholder]:empty::before {
+        color: rgba(15, 15, 15, .58) !important;
       }
 
       @media (max-width: 720px) {
@@ -497,19 +539,76 @@
     }
   }
 
+  function skinTopBar() {
+    const oldBars = [...document.querySelectorAll('.xz-header-v044')];
+    const matches = [];
+    let probe = document.elementFromPoint(window.innerWidth / 2, 18);
+
+    while (probe && probe !== document.body && probe !== document.documentElement) {
+      const rect = probe.getBoundingClientRect?.();
+      if (rect
+        && rect.width >= window.innerWidth * .78
+        && rect.height >= 42
+        && rect.height <= 150
+        && rect.top <= 12
+        && rect.bottom >= 42) {
+        matches.push({ element: probe, area: rect.width * rect.height });
+      }
+      probe = probe.parentElement;
+    }
+
+    if (!matches.length) {
+      document.querySelectorAll('header, [role="banner"], [class*="sticky"], [class*="fixed"]')
+        .forEach((element) => {
+          const rect = element.getBoundingClientRect?.();
+          if (rect
+            && rect.width >= window.innerWidth * .78
+            && rect.height >= 42
+            && rect.height <= 150
+            && rect.top <= 12
+            && rect.bottom >= 42) {
+            matches.push({ element, area: rect.width * rect.height });
+          }
+        });
+    }
+
+    matches.sort((a, b) => a.area - b.area);
+    const current = matches[0]?.element || null;
+    oldBars.forEach((element) => {
+      if (element !== current) element.classList.remove('xz-header-v044');
+    });
+    current?.classList.add('xz-header-v044');
+  }
+
   function skinComposer() {
     const prompt = document.querySelector('#prompt-textarea');
     if (!prompt) return;
+    let surface = null;
     let node = prompt.parentElement;
     while (node && node !== document.body) {
       if (typeof node.className === 'string' && node.className.includes('composer-surface-primary')) {
-        document.querySelectorAll('.xz-composer-v04').forEach((old) => {
-          if (old !== node) old.classList.remove('xz-composer-v04');
-        });
-        node.classList.add('xz-composer-v04');
-        return;
+        surface = node;
+        break;
       }
       node = node.parentElement;
+    }
+
+    if (!surface) return;
+    document.querySelectorAll('.xz-composer-v04').forEach((old) => {
+      if (old !== surface) old.classList.remove('xz-composer-v04');
+    });
+    surface.classList.add('xz-composer-v04');
+
+    document.querySelectorAll('.xz-composer-backdrop-v044').forEach((old) => {
+      old.classList.remove('xz-composer-backdrop-v044');
+    });
+
+    let wrapper = surface.parentElement;
+    for (let level = 0; level < 4 && wrapper && wrapper !== document.body; level += 1) {
+      const rect = wrapper.getBoundingClientRect?.();
+      if (!rect || rect.width < window.innerWidth * .75 || rect.height > 280) break;
+      wrapper.classList.add('xz-composer-backdrop-v044');
+      wrapper = wrapper.parentElement;
     }
   }
 
@@ -523,6 +622,7 @@
   function refresh() {
     document.documentElement.classList.add(ROOT_CLASS);
     document.getElementById('xz-together-v041')?.remove();
+    skinTopBar();
     cleanOrphanIdentities();
     document.querySelectorAll(
       '[data-message-author-role="user"], [data-message-author-role="assistant"]'
@@ -547,6 +647,8 @@
     registerBackgroundMenu();
     refresh();
     loadAssets();
+
+    window.addEventListener('resize', scheduleRefresh, { passive: true });
 
     const observer = new MutationObserver(scheduleRefresh);
     observer.observe(document.body, { childList: true, subtree: true });
