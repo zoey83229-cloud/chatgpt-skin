@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.4
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.5
 // @namespace    xiaozhou-suqu
-// @version      0.4.4
-// @description  iPhone Safari 梦幻轻透版：黑色系统文字、列表页透明页眉、雾面输入框与五线谱身份区；保留原生交互。
+// @version      0.4.5
+// @description  iPhone Safari 梦幻轻透版：主题化玻璃输入区、黑色系统文字、透明页眉与五线谱身份区；保留原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v044';
-  const STYLE_ID = 'xz-suqu-style-v044';
+  const ROOT_CLASS = 'xz-skin-v045';
+  const STYLE_ID = 'xz-suqu-style-v045';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -419,11 +419,13 @@
 
       .xz-composer-v04 {
         border: 1px solid rgba(255, 255, 255, .78) !important;
-        border-radius: 25px !important;
-        background: rgba(255, 253, 249, .62) !important;
-        box-shadow: 0 8px 28px rgba(28, 28, 28, .065) !important;
-        backdrop-filter: blur(15px) saturate(106%) !important;
-        -webkit-backdrop-filter: blur(15px) saturate(106%) !important;
+        border-radius: 30px !important;
+        background: rgba(255, 253, 249, .5) !important;
+        box-shadow:
+          0 10px 32px rgba(28, 28, 28, .075),
+          inset 0 1px 0 rgba(255, 255, 255, .62) !important;
+        backdrop-filter: blur(17px) saturate(108%) !important;
+        -webkit-backdrop-filter: blur(17px) saturate(108%) !important;
       }
 
       html.${ROOT_CLASS} .xz-composer-backdrop-v044 {
@@ -438,6 +440,44 @@
 
       html.${ROOT_CLASS} #prompt-textarea[data-placeholder]:empty::before {
         color: rgba(15, 15, 15, .58) !important;
+      }
+
+      html.${ROOT_CLASS} .xz-composer-control-v045 {
+        color: #0f0f0f !important;
+        border: 1px solid rgba(255, 255, 255, .66) !important;
+        background: rgba(255, 255, 255, .38) !important;
+        box-shadow:
+          0 3px 12px rgba(28, 28, 28, .045),
+          inset 0 1px 0 rgba(255, 255, 255, .52) !important;
+        backdrop-filter: blur(10px) saturate(104%) !important;
+        -webkit-backdrop-filter: blur(10px) saturate(104%) !important;
+      }
+
+      html.${ROOT_CLASS} .xz-model-v045 {
+        border-radius: 999px !important;
+      }
+
+      html.${ROOT_CLASS} .xz-send-v045 {
+        color: #fff !important;
+        border: 1px solid rgba(255, 255, 255, .72) !important;
+        background: linear-gradient(
+          145deg,
+          rgba(191, 137, 157, .94),
+          rgba(150, 107, 125, .94)
+        ) !important;
+        box-shadow:
+          0 5px 16px rgba(112, 74, 89, .2),
+          inset 0 1px 0 rgba(255, 255, 255, .32) !important;
+      }
+
+      html.${ROOT_CLASS} .xz-send-v045 *,
+      html.${ROOT_CLASS} .xz-send-v045 svg {
+        color: #fff !important;
+      }
+
+      html.${ROOT_CLASS} .xz-send-v045:disabled {
+        opacity: .58;
+        filter: saturate(.72);
       }
 
       @media (max-width: 720px) {
@@ -580,6 +620,39 @@
     current?.classList.add('xz-header-v044');
   }
 
+  function skinComposerControls(surface) {
+    document.querySelectorAll(
+      '.xz-composer-control-v045, .xz-model-v045, .xz-send-v045'
+    ).forEach((button) => {
+      button.classList.remove('xz-composer-control-v045', 'xz-model-v045', 'xz-send-v045');
+    });
+
+    const surfaceRect = surface.getBoundingClientRect();
+    [...surface.querySelectorAll('button')].forEach((button) => {
+      const rect = button.getBoundingClientRect();
+      if (rect.width < 28 || rect.height < 28 || rect.height > 72) return;
+
+      const fingerprint = [
+        button.dataset.testid || '',
+        button.getAttribute('aria-label') || '',
+        button.title || ''
+      ].join(' ').toLowerCase();
+      const background = getComputedStyle(button).backgroundColor.match(/[\d.]+/g)?.map(Number) || [];
+      const isDark = background.length >= 3
+        && background[0] + background[1] + background[2] < 150;
+      const isRightmost = rect.right >= surfaceRect.right - 18;
+      const isSend = /send|发送|submit|stop|停止/.test(fingerprint) || (isDark && isRightmost);
+
+      if (isSend) {
+        button.classList.add('xz-send-v045');
+        return;
+      }
+
+      button.classList.add('xz-composer-control-v045');
+      if (rect.width >= rect.height * 1.7) button.classList.add('xz-model-v045');
+    });
+  }
+
   function skinComposer() {
     const prompt = document.querySelector('#prompt-textarea');
     if (!prompt) return;
@@ -598,6 +671,7 @@
       if (old !== surface) old.classList.remove('xz-composer-v04');
     });
     surface.classList.add('xz-composer-v04');
+    skinComposerControls(surface);
 
     document.querySelectorAll('.xz-composer-backdrop-v044').forEach((old) => {
       old.classList.remove('xz-composer-backdrop-v044');
