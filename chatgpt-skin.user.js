@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.10
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.11
 // @namespace    xiaozhou-suqu
-// @version      0.4.10
-// @description  iPhone Safari 梦幻轻透版：纯 CSS 私人占位语、低开销刷新、无白框页眉与浅灰蓝发送键。
+// @version      0.4.11
+// @description  iPhone Safari 梦幻轻透版：无边框透明页眉、纯 CSS 私人占位语、低开销刷新与浅灰蓝发送键。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v0410';
-  const STYLE_ID = 'xz-suqu-style-v0410';
+  const ROOT_CLASS = 'xz-skin-v0411';
+  const STYLE_ID = 'xz-suqu-style-v0411';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -178,8 +178,9 @@
       /* 只换原生顶部栏的材质，不改变它的定位、层级或点击。 */
       html.${ROOT_CLASS} header {
         background: rgba(255, 253, 250, .58) !important;
-        border-bottom-color: rgba(255, 255, 255, .52) !important;
-        box-shadow: 0 5px 18px rgba(55, 48, 43, .035) !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
         backdrop-filter: blur(15px) saturate(106%) !important;
         -webkit-backdrop-filter: blur(15px) saturate(106%) !important;
       }
@@ -187,13 +188,17 @@
       html.${ROOT_CLASS} header > div,
       html.${ROOT_CLASS} header nav {
         background-color: transparent !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
       }
 
       /* 项目聊天列表使用另一套顶部节点，由脚本按真实可见位置标记。 */
       html.${ROOT_CLASS} .xz-header-v044 {
         background: rgba(255, 253, 250, .53) !important;
-        border-bottom-color: rgba(255, 255, 255, .5) !important;
-        box-shadow: 0 5px 18px rgba(30, 30, 30, .04) !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
         backdrop-filter: blur(16px) saturate(106%) !important;
         -webkit-backdrop-filter: blur(16px) saturate(106%) !important;
       }
@@ -202,10 +207,14 @@
       html.${ROOT_CLASS} .xz-header-v044 > nav {
         background-color: transparent !important;
         background-image: none !important;
+        border: 0 !important;
+        outline: 0 !important;
+        box-shadow: none !important;
       }
 
       html.${ROOT_CLASS} .xz-header-clear-v047 {
-        border-color: transparent !important;
+        border: 0 !important;
+        outline: 0 !important;
         background-color: transparent !important;
         background-image: none !important;
         box-shadow: none !important;
