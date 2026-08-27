@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.2
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.3
 // @namespace    xiaozhou-suqu
-// @version      0.4.2
-// @description  iPhone Safari 梦幻轻透版：照片背景、雾面气泡、头像名字与五线谱身份区、宋体；保留原生交互。
+// @version      0.4.3
+// @description  iPhone Safari 梦幻轻透版：增强文字对比度、透明顶部栏、雾面气泡与五线谱身份区；保留原生交互。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -140,8 +140,8 @@
     style.textContent = `
       :root {
         --xz-v04-paper: 255, 253, 249;
-        --xz-v04-ink: 57, 52, 48;
-        --xz-v04-soft: 105, 97, 91;
+        --xz-v04-ink: 39, 36, 34;
+        --xz-v04-soft: 88, 82, 78;
         --xz-v04-font: "Songti SC", "STSong", "SimSun", "Noto Serif CJK SC", serif;
         --xz-v04-background: none;
       }
@@ -170,6 +170,25 @@
         background-color: transparent !important;
       }
 
+      /* 只换原生顶部栏的材质，不改变它的定位、层级或点击。 */
+      html.${ROOT_CLASS} header {
+        background: rgba(255, 253, 250, .58) !important;
+        border-bottom-color: rgba(255, 255, 255, .52) !important;
+        box-shadow: 0 5px 18px rgba(55, 48, 43, .035) !important;
+        backdrop-filter: blur(15px) saturate(106%) !important;
+        -webkit-backdrop-filter: blur(15px) saturate(106%) !important;
+      }
+
+      html.${ROOT_CLASS} header > div,
+      html.${ROOT_CLASS} header nav {
+        background-color: transparent !important;
+      }
+
+      html.${ROOT_CLASS} #main [class*="text-token-text-secondary"],
+      html.${ROOT_CLASS} #main [class*="text-token-text-tertiary"] {
+        color: rgba(var(--xz-v04-ink), .7) !important;
+      }
+
       .xz-identity-v04 {
         display: flex;
         width: max-content;
@@ -178,7 +197,7 @@
         align-items: center;
         gap: 9px;
         margin: 0 0 9px;
-        color: rgba(var(--xz-v04-ink), .76);
+        color: rgba(var(--xz-v04-ink), .86);
         font-family: var(--xz-v04-font);
         font-size: 19px;
         font-style: italic;
@@ -294,8 +313,8 @@
         padding: 10px 14px !important;
         border: 1px solid rgba(255, 255, 255, .72) !important;
         border-radius: 16px !important;
-        color: rgba(var(--xz-v04-ink), .88) !important;
-        background: rgba(var(--xz-v04-paper), .58) !important;
+        color: rgba(var(--xz-v04-ink), .96) !important;
+        background: rgba(var(--xz-v04-paper), .7) !important;
         box-shadow: 0 5px 20px rgba(67, 56, 48, .045) !important;
         backdrop-filter: blur(9px) saturate(102%) !important;
         -webkit-backdrop-filter: blur(9px) saturate(102%) !important;
@@ -326,7 +345,7 @@
         padding: 10px 14px !important;
         border: 1px solid rgba(255, 255, 255, .7) !important;
         border-radius: 16px !important;
-        background: rgba(var(--xz-v04-paper), .56) !important;
+        background: rgba(var(--xz-v04-paper), .68) !important;
         box-shadow: 0 5px 20px rgba(67, 56, 48, .04) !important;
         backdrop-filter: blur(9px) saturate(102%) !important;
         -webkit-backdrop-filter: blur(9px) saturate(102%) !important;
@@ -339,7 +358,7 @@
       .xz-bubble-v04[data-xz-role="user"] {
         width: fit-content !important;
         margin-inline: auto 0 !important;
-        background: rgba(249, 246, 242, .63) !important;
+        background: rgba(249, 246, 242, .74) !important;
       }
 
       /* ChatGPT 的正文子节点会单独指定黑体，这里只压正文标签，不碰图标。 */
@@ -375,7 +394,7 @@
       }
 
       html.${ROOT_CLASS} #prompt-textarea {
-        color: rgb(var(--xz-v04-ink)) !important;
+        color: rgba(var(--xz-v04-ink), .96) !important;
         font-family: var(--xz-v04-font) !important;
       }
 
