@@ -1,8 +1,8 @@
 // ==UserScript==
-// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.6
+// @name         小粥 × 苏瞿｜ChatGPT 手机网页美化 v0.4.7
 // @namespace    xiaozhou-suqu
-// @version      0.4.6
-// @description  iPhone Safari 梦幻轻透版：高透明玻璃输入区、浅灰蓝发送键、透明页眉与五线谱身份区；保留原生交互。
+// @version      0.4.7
+// @description  iPhone Safari 梦幻轻透版：无白色分组框页眉、灰色模式标识、高透明输入区与浅灰蓝发送键。
 // @match        https://chatgpt.com/*
 // @match        https://www.chatgpt.com/*
 // @run-at       document-idle
@@ -14,8 +14,8 @@
 (() => {
   'use strict';
 
-  const ROOT_CLASS = 'xz-skin-v046';
-  const STYLE_ID = 'xz-suqu-style-v046';
+  const ROOT_CLASS = 'xz-skin-v047';
+  const STYLE_ID = 'xz-suqu-style-v047';
   const DB_NAME = 'xz-suqu-chat-skin-v04';
   const STORE_NAME = 'images';
   const LEGACY_KEY = 'xz_suqu_chat_skin_v03';
@@ -202,6 +202,20 @@
       html.${ROOT_CLASS} .xz-header-v044 > nav {
         background-color: transparent !important;
         background-image: none !important;
+      }
+
+      html.${ROOT_CLASS} .xz-header-clear-v047 {
+        border-color: transparent !important;
+        background-color: transparent !important;
+        background-image: none !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+      }
+
+      html.${ROOT_CLASS} .xz-header-mode-v047,
+      html.${ROOT_CLASS} .xz-header-mode-v047 * {
+        color: rgba(15, 15, 15, .5) !important;
       }
 
       html.${ROOT_CLASS} [class*="text-token-text-primary"] {
@@ -420,7 +434,7 @@
       .xz-composer-v04 {
         border: 1px solid rgba(255, 255, 255, .78) !important;
         border-radius: 30px !important;
-        background: rgba(255, 253, 249, .36) !important;
+        background: rgba(255, 253, 249, .23) !important;
         box-shadow:
           0 10px 32px rgba(28, 28, 28, .075),
           inset 0 1px 0 rgba(255, 255, 255, .62) !important;
@@ -445,7 +459,7 @@
       html.${ROOT_CLASS} .xz-composer-control-v045 {
         color: #0f0f0f !important;
         border: 1px solid rgba(255, 255, 255, .66) !important;
-        background: rgba(255, 255, 255, .25) !important;
+        background: rgba(255, 255, 255, .14) !important;
         box-shadow:
           0 3px 12px rgba(28, 28, 28, .045),
           inset 0 1px 0 rgba(255, 255, 255, .52) !important;
@@ -462,8 +476,8 @@
         border: 1px solid rgba(255, 255, 255, .72) !important;
         background: linear-gradient(
           145deg,
-          rgba(188, 202, 214, .94),
-          rgba(151, 172, 191, .94)
+          rgba(180, 198, 214, .98),
+          rgba(128, 155, 180, .98)
         ) !important;
         box-shadow:
           0 5px 16px rgba(86, 111, 132, .2),
@@ -476,8 +490,8 @@
       }
 
       html.${ROOT_CLASS} .xz-send-v045:disabled {
-        opacity: .58;
-        filter: saturate(.72);
+        opacity: .86;
+        filter: saturate(.88);
       }
 
       @media (max-width: 720px) {
@@ -579,6 +593,44 @@
     }
   }
 
+  function skinHeaderContents(header) {
+    document.querySelectorAll('.xz-header-clear-v047').forEach((element) => {
+      element.classList.remove('xz-header-clear-v047');
+    });
+    document.querySelectorAll('.xz-header-mode-v047').forEach((element) => {
+      element.classList.remove('xz-header-mode-v047');
+    });
+    if (!header) return;
+
+    const headerRect = header.getBoundingClientRect();
+    header.querySelectorAll('div, nav').forEach((element) => {
+      const rect = element.getBoundingClientRect();
+      if (rect.width < 72
+        || rect.height < 38
+        || rect.height > headerRect.height + 8
+        || rect.width > headerRect.width * .48) return;
+
+      const rgba = getComputedStyle(element).backgroundColor.match(/[\d.]+/g)?.map(Number) || [];
+      const alpha = rgba.length > 3 ? rgba[3] : 1;
+      const isWhite = rgba.length >= 3
+        && rgba[0] > 235
+        && rgba[1] > 235
+        && rgba[2] > 235
+        && alpha > .28;
+      if (isWhite) element.classList.add('xz-header-clear-v047');
+    });
+
+    const modeCandidates = [...header.querySelectorAll('span, button, div')]
+      .filter((element) => /^(聊天|工作)$/.test(element.textContent?.trim() || ''))
+      .map((element) => {
+        const rect = element.getBoundingClientRect();
+        return { element, area: rect.width * rect.height };
+      })
+      .filter(({ area }) => area > 0)
+      .sort((a, b) => a.area - b.area);
+    modeCandidates[0]?.element.classList.add('xz-header-mode-v047');
+  }
+
   function skinTopBar() {
     const oldBars = [...document.querySelectorAll('.xz-header-v044')];
     const matches = [];
@@ -618,6 +670,7 @@
       if (element !== current) element.classList.remove('xz-header-v044');
     });
     current?.classList.add('xz-header-v044');
+    skinHeaderContents(current);
   }
 
   function skinComposerControls(surface) {
